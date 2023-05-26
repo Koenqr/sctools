@@ -7,6 +7,7 @@ import os
 suffix=r'USER\Client\0\Profiles\default'
 
 files=('attributes.xml','actionmaps.xml')
+cfgFile='USER.cfg'
 
 currentPath=os.getcwd()
 
@@ -23,49 +24,63 @@ class scTools():
         self.root.geometry('600x250')
         self.root.title('SC Tools')
         
+        noteBook=ttk.Notebook(self.root)
+        noteBook.pack(expand=True,fill='both')
         
-        self.mainframe=tk.Frame(self.root)
-        self.mainframe.pack(fill='both',expand=True)
+        self.settingsFrame=ttk.Frame(noteBook)
+        self.settingsFrame.pack(fill='both',expand=True)
         
         
-        
-        self.title=ttk.Label(self.mainframe,text='SC Tools',font=("Brass Mono",30))
+        self.title=ttk.Label(self.settingsFrame,text='SC Tools',font=("Brass Mono",30))
         self.title.grid(row=0,column=0)
         
         
-        self.pathInput=tk.Entry(self.mainframe)
+        self.pathInput=tk.Entry(self.settingsFrame)
         self.pathInput.grid(row=1,column=0,pady=10,sticky='ew')
         
-        pathButton=ttk.Button(self.mainframe,text='set RSI path',command=self.setPath)
+        pathButton=ttk.Button(self.settingsFrame,text='set RSI path',command=self.setPath)
         pathButton.grid(row=1,column=2,pady=10)
 
-        pathDefaultButton=ttk.Button(self.mainframe,text='use Default path',command=self.defaultPath)
+        pathDefaultButton=ttk.Button(self.settingsFrame,text='use Default path',command=self.defaultPath)
         pathDefaultButton.grid(row=1,column=3,pady=10)
         
 
         versions=["LIVE","PTU"]      
-        self.Version=ttk.Combobox(self.mainframe,values=versions)
+        self.Version=ttk.Combobox(self.settingsFrame,values=versions)
         self.Version.grid(row=2,column=0,pady=10,sticky='ew')
         
-        versionButton=ttk.Button(self.mainframe,text='set version',command=self.setVersion) 
+        versionButton=ttk.Button(self.settingsFrame,text='set version',command=self.setVersion) 
         versionButton.grid(row=2,column=2,pady=10)
         
         
         
-        self.pathText=ttk.Label(self.mainframe,text='Path undifined')
+        self.pathText=ttk.Label(self.settingsFrame,text='Path undifined')
         self.pathText.grid(row=3,column=0,pady=10)
         
         
         
-        backupButton=ttk.Button(self.mainframe,text='Backup',command=self.backup)
+        backupButton=ttk.Button(self.settingsFrame,text='Backup',command=self.backup)
         backupButton.grid(row=4,column=0,pady=10)
-        restoreButton=ttk.Button(self.mainframe,text='Restore',command=self.restore)
+        restoreButton=ttk.Button(self.settingsFrame,text='Restore',command=self.restore)
         restoreButton.grid(row=4,column=1,pady=10)
         
         
-        self.statusText=ttk.Label(self.mainframe,text='Status: waiting on cammand')
+        self.statusText=ttk.Label(self.settingsFrame,text='Status: waiting on cammand')
         self.statusText.grid(row=5,column=0,pady=10)
         
+        
+        self.cfgFrame=ttk.Frame(noteBook)
+        self.cfgFrame.pack(fill='both',expand=True)
+        
+        
+        cfgBackupButton=ttk.Button(self.cfgFrame,text='Backup',command=self.cfgBackup)
+        cfgBackupButton.grid(row=0,column=0,pady=10)
+        cfgRestoreButton=ttk.Button(self.cfgFrame,text='Restore',command=self.cfgRestore)
+        cfgRestoreButton.grid(row=0,column=1,pady=10)
+        
+        
+        noteBook.add(self.settingsFrame,text='Settings')
+        noteBook.add(self.cfgFrame,text='cfg')
         
         self.root.mainloop()
         return
@@ -113,6 +128,21 @@ class scTools():
                 print('file not found: '+os.getcwd()+'\\'+file)
         self.statusText.config(text='Status: '+str(labelcount)+' files restored, out of '+str(len(files)))
         return
+    
+    def cfgBackup(self):
+        if os.path.isfile(self.path+'\\'+self.version+'\\'+cfgFile):
+            shutil.copy(self.path+'\\'+self.version+'\\'+cfgFile,os.getcwd()+'\\'+cfgFile)
+        else:
+            print("no file found")
+
+            
+    def cfgRestore(self):
+        if os.path.isfile(currentPath+'\\'+cfgFile):
+            shutil.copy(os.getcwd()+'\\'+cfgFile,self.path+'\\'+self.version+'\\'+cfgFile)
+        else:
+            print("no file found, making new one")
+            open(self.path+'\\'+self.version+'\\'+cfgFile,'w')
+
     
     
 
