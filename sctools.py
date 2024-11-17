@@ -21,7 +21,7 @@ class scTools():
     
     def __init__(self):
         self.root=tk.Tk()
-        self.root.geometry('600x250')
+        self.root.geometry('600x280')
         self.root.title('SC Tools')
         
         noteBook=ttk.Notebook(self.root)
@@ -45,7 +45,7 @@ class scTools():
         pathDefaultButton.grid(row=1,column=3,pady=10)
         
 
-        versions=["LIVE","PTU"]      
+        versions=["LIVE","PTU","EPTU"]      
         self.Version=ttk.Combobox(self.settingsFrame,values=versions)
         self.Version.grid(row=2,column=0,pady=10,sticky='ew')
         
@@ -63,6 +63,9 @@ class scTools():
         backupButton.grid(row=4,column=0,pady=10)
         restoreButton=ttk.Button(self.settingsFrame,text='Restore',command=self.restore)
         restoreButton.grid(row=4,column=1,pady=10)
+        
+        shaderButton=ttk.Button(self.settingsFrame,text='Clear Shaders',command=self.clearShaders)
+        shaderButton.grid(row=4,column=2,pady=10)
         
         
         self.statusText=ttk.Label(self.settingsFrame,text='Status: waiting on cammand')
@@ -128,6 +131,19 @@ class scTools():
                 print('file not found: '+os.getcwd()+'\\'+file)
         self.statusText.config(text='Status: '+str(labelcount)+' files restored, out of '+str(len(files)))
         return
+    
+    def clearShaders(self):
+        #remove all directories in the shader cache folder except Crashes
+        #"%localappdata%\Star Citizen"
+        f=os.getenv('localappdata')+'\\Star Citizen'
+        foldercontent=os.listdir(f)
+        for folder in foldercontent:
+            if folder!='Crashes':
+                shutil.rmtree(f+'\\'+folder)
+        self.statusText.config(text='Status: Shaders cleared')
+        return
+    
+    
     
     def cfgBackup(self):
         if os.path.isfile(self.path+'\\'+self.version+'\\'+cfgFile):
